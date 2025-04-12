@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
+
+typedef unsigned __int128 __uint128_t;
 
 // ===
 // =======--------------------------------------------------------------------------------------------------------------------------------------
@@ -15,7 +18,6 @@
 ** obsolescent typedef name __uint128_t.  Works with GCC 4.7.1 but not
 ** GCC 4.1.2 (but __uint128_t works with GCC 4.1.2) on Mac OS X 10.7.4.
 */
-typedef unsigned __int128 uint128_t; // makes type less annoying to write out
 
 /*      UINT64_MAX 18446744073709551615ULL */
 
@@ -27,7 +29,7 @@ typedef unsigned __int128 uint128_t; // makes type less annoying to write out
 #define STRINGIZER(x) #x
 #define TO_STRING(x) STRINGIZER(x)
 
-int print_u128_u(uint128_t u128)
+int print_u128_u(__uint128_t u128)
 {
     int rc;
     // check if the value is larger than UINT64_MAX
@@ -36,7 +38,7 @@ int print_u128_u(uint128_t u128)
     {
         // if so, divide by the largest power of 10
         // that is still smaller than UINT64_MAX
-        uint128_t leading = u128 / P10_UINT64;
+        __uint128_t leading = u128 / P10_UINT64;
         uint64_t trailing = u128 % P10_UINT64;
         rc = print_u128_u(leading); // prints to console and stores value at the same time
 
@@ -53,4 +55,81 @@ int print_u128_u(uint128_t u128)
     }
     return rc; // number of digits can be stored in an int variable
     // print this number using printf("\n%d\n", rc); (%d is a placeholder for rc)
+}
+
+// prints array of doubles as a series of doubles
+void printDoubleArr(double *arr)
+{
+    size_t size = sizeof(arr) / sizeof(arr[0]);
+    // printf("Size: %d size of arr: %d size of first element %llu\n", size, sizeof(arr), sizeof(arr[0]));
+
+    printf("[");
+    for (int i = 0; i < 128 - 1; i++)
+    {
+        printf("%f ,", arr[i]);
+    }
+    printf("%d]\n", arr[size - 1]);
+}
+
+int getLengthOfNum(__uint128_t input)
+{
+    // base case: num is < 10
+    if (input < 10)
+    {
+        return 1;
+    }
+
+    return 1 + getLengthOfNum(input / 10);
+}
+
+static const char *charmap = "0123456789";
+
+char *u128ToString(__uint128_t u128)
+{
+    if (u128 == 0)
+    {
+        return "0\0";
+    }
+
+    // uint128 is at most 40 characters long
+    // we need an extra one to insert '\0' to make it printable.
+    char *result = (char *)malloc((41) * sizeof(char));
+    int index = 0;
+
+    while (u128 > 0)
+    {
+        result[index++] = '0' + (u128 % 10);
+
+        u128 /= 10;
+    }
+
+    result[40] = '\0';
+    return result;
+}
+
+char *strToBinary(__uint128_t input, int len)
+{
+    char *u128 = u128ToString(input);
+    char *result = (char *)malloc((len + 1) * sizeof(char));
+
+    for (int i = 0; i < len; i++)
+    {
+        if ((int)u128[i] >= 5)
+        {
+            result[i] = 1;
+        }
+        else
+        {
+            result[i] = 0;
+        }
+    }
+
+    result[128] = '\0'; // make it null terminated so we can print
+    return result;
+}
+
+char *doubleArrToBinary(double *arr, int len)
+{
+    char *result = (char *)malloc((len + 1) * sizeof(char));
+    return result;
 }
