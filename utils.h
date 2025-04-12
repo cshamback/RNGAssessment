@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <inttypes.h>
+    
 
 typedef unsigned __int128 __uint128_t;
-int print_u128_u(__uint128_t u128);
+void  print_u128_u(__uint128_t u128, char* buf);
 void printDoubleArr(double *arr);
 
 int getLengthOfNum(double input);

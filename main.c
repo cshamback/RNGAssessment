@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
 #include "utils.h"
 
-typedef unsigned __int128 __uint128_t;
+#define  UINT128(hi,lo) (((__uint128_t) (hi)) <<64 | (lo))
 
 // to compile: terminal > gcc main.c utils.c -o main.exe
 
@@ -18,10 +17,13 @@ double *acorn();
 
 int main()
 {
-    __uint128_t input = 298837938472475740085289658204777285555;
-    print_u128_u(input);
-    char *result = u128ToString(input, 128);
-    printf("%s\n", result);
+    char buf[40];
+
+    //__uint128_t  input = 298837938472475740085289658204777285555;
+    __uint128_t input = UINT128(0x1, 0x0);
+    unsigned long long high_64 = input >> 64;
+    print_u128_u(input, buf);
+    printf("%s\n", buf);
     /*
     while (1)
     {

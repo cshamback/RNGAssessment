@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-typedef unsigned __int128 __uint128_t;
+typedef unsigned __int128 uint128_t;
+typedef unsigned long long u64;
 
 // ===
 // =======--------------------------------------------------------------------------------------------------------------------------------------
@@ -28,34 +29,23 @@ typedef unsigned __int128 __uint128_t;
 
 #define STRINGIZER(x) #x
 #define TO_STRING(x) STRINGIZER(x)
-
-int print_u128_u(__uint128_t u128)
-{
-    int rc;
-    // check if the value is larger than UINT64_MAX
-    // (maximum unsigned 64-bit value)
-    if (u128 > UINT64_MAX)
-    {
-        // if so, divide by the largest power of 10
-        // that is still smaller than UINT64_MAX
-        __uint128_t leading = u128 / P10_UINT64;
-        uint64_t trailing = u128 % P10_UINT64;
-        rc = print_u128_u(leading); // prints to console and stores value at the same time
-
-        // print the result of the division
-        // also print the remainder mod (P10)
-        rc += printf("%." TO_STRING(E10_UINT64) PRIu64, trailing);
+void print_u128_u(uint128_t u128, char* buf) {
+    char b[40];
+    int i = 0;
+    if (u128==0) {
+        buf[0] = '0';
+        buf[1] = '\0';
     }
-    else
-    {
-        // not too big to fit in a 64-bit unsigned integer
-        // convert and print
-        uint64_t u64 = u128;
-        rc = printf("%" PRIu64, u64);
+    while(u128 != 0) {
+        b[i++] = u128%10 + '0'; 
+        u128/= 10;     
     }
-    return rc; // number of digits can be stored in an int variable
-    // print this number using printf("\n%d\n", rc); (%d is a placeholder for rc)
+    for(int j=0; j < 40; j++){
+        buf[j] = b[i-j-1];
+    }
+
 }
+
 
 // prints array of doubles as a series of doubles
 void printDoubleArr(double *arr)
